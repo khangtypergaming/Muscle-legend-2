@@ -40,10 +40,10 @@ local State = {
 	Hatch = false,
 	Strength = false,
 	Rebirth = false,
-	AutoEquip = false
+	AutoEquip = false,
+	AntiAFK = false
 }
 
--- Biến này dùng để dừng toàn bộ hệ thống
 local ScriptRunning = true
 
 --==================================================
@@ -61,8 +61,8 @@ Gui.Parent = Player:WaitForChild("PlayerGui")
 --==================================================
 
 local Frame = Instance.new("Frame")
-Frame.Size = UDim2.fromOffset(300, 370)
-Frame.Position = UDim2.new(.5, -150, .5, -185)
+Frame.Size = UDim2.fromOffset(300, 478)
+Frame.Position = UDim2.new(.5, -150, .5, -239)
 Frame.BackgroundColor3 = Color3.fromRGB(18, 19, 25)
 Frame.BorderSizePixel = 0
 Frame.Parent = Gui
@@ -169,9 +169,7 @@ MinimizeButton.MouseEnter:Connect(function()
 	Tween:Create(
 		MinimizeButton,
 		TweenInfo.new(.12),
-		{
-			BackgroundColor3 = Color3.fromRGB(75, 80, 100)
-		}
+		{BackgroundColor3 = Color3.fromRGB(75, 80, 100)}
 	):Play()
 end)
 
@@ -179,9 +177,7 @@ MinimizeButton.MouseLeave:Connect(function()
 	Tween:Create(
 		MinimizeButton,
 		TweenInfo.new(.12),
-		{
-			BackgroundColor3 = Color3.fromRGB(55, 58, 72)
-		}
+		{BackgroundColor3 = Color3.fromRGB(55, 58, 72)}
 	):Play()
 end)
 
@@ -207,9 +203,7 @@ CloseButton.MouseEnter:Connect(function()
 	Tween:Create(
 		CloseButton,
 		TweenInfo.new(.12),
-		{
-			BackgroundColor3 = Color3.fromRGB(220, 65, 75)
-		}
+		{BackgroundColor3 = Color3.fromRGB(220, 65, 75)}
 	):Play()
 end)
 
@@ -217,9 +211,7 @@ CloseButton.MouseLeave:Connect(function()
 	Tween:Create(
 		CloseButton,
 		TweenInfo.new(.12),
-		{
-			BackgroundColor3 = Color3.fromRGB(170, 55, 65)
-		}
+		{BackgroundColor3 = Color3.fromRGB(170, 55, 65)}
 	):Play()
 end)
 
@@ -245,7 +237,6 @@ local function CreateButton(name, desc, icon, y)
 	Stroke.Thickness = 1
 	Stroke.Parent = B
 
-	-- Icon
 	local I = Instance.new("TextLabel")
 	I.Size = UDim2.fromOffset(34, 34)
 	I.Position = UDim2.fromOffset(8, 7)
@@ -258,7 +249,6 @@ local function CreateButton(name, desc, icon, y)
 
 	Instance.new("UICorner", I).CornerRadius = UDim.new(0, 9)
 
-	-- Name
 	local L = Instance.new("TextLabel")
 	L.Size = UDim2.new(1, -140, 0, 22)
 	L.Position = UDim2.fromOffset(50, 3)
@@ -270,7 +260,6 @@ local function CreateButton(name, desc, icon, y)
 	L.TextXAlignment = Enum.TextXAlignment.Left
 	L.Parent = B
 
-	-- Description
 	local D = Instance.new("TextLabel")
 	D.Size = UDim2.new(1, -140, 0, 15)
 	D.Position = UDim2.fromOffset(50, 27)
@@ -282,7 +271,6 @@ local function CreateButton(name, desc, icon, y)
 	D.TextXAlignment = Enum.TextXAlignment.Left
 	D.Parent = B
 
-	-- Status
 	local S = Instance.new("TextLabel")
 	S.Size = UDim2.fromOffset(57, 25)
 	S.Position = UDim2.new(1, -67, .5, -12)
@@ -295,45 +283,32 @@ local function CreateButton(name, desc, icon, y)
 
 	Instance.new("UICorner", S).CornerRadius = UDim.new(1, 0)
 
-	-- Hover
 	B.MouseEnter:Connect(function()
-
 		Tween:Create(
 			B,
 			TweenInfo.new(.12),
-			{
-				BackgroundColor3 = Color3.fromRGB(39, 42, 53)
-			}
+			{BackgroundColor3 = Color3.fromRGB(39, 42, 53)}
 		):Play()
 
 		Tween:Create(
 			Stroke,
 			TweenInfo.new(.12),
-			{
-				Color = Color3.fromRGB(90, 95, 120)
-			}
+			{Color = Color3.fromRGB(90, 95, 120)}
 		):Play()
-
 	end)
 
 	B.MouseLeave:Connect(function()
-
 		Tween:Create(
 			B,
 			TweenInfo.new(.12),
-			{
-				BackgroundColor3 = Color3.fromRGB(30, 32, 41)
-			}
+			{BackgroundColor3 = Color3.fromRGB(30, 32, 41)}
 		):Play()
 
 		Tween:Create(
 			Stroke,
 			TweenInfo.new(.12),
-			{
-				Color = Color3.fromRGB(55, 58, 70)
-			}
+			{Color = Color3.fromRGB(55, 58, 70)}
 		):Play()
-
 	end)
 
 	return {
@@ -383,6 +358,20 @@ local AutoEquipButton = CreateButton(
 	292
 )
 
+local IYButton = CreateButton(
+	"Infinite Yield",
+	"Open Infinite Yield commands",
+	"IY",
+	346
+)
+
+local AntiAFKButton = CreateButton(
+	"Anti AFK",
+	"Prevent automatic AFK kick",
+	"A",
+	400
+)
+
 --==================================================
 -- MADE BY
 --==================================================
@@ -407,7 +396,6 @@ FooterStroke.Transparency = .25
 FooterStroke.Parent = Footer
 
 local FooterGradient = Instance.new("UIGradient")
-FooterGradient.Rotation = 0
 FooterGradient.Color = ColorSequence.new({
 	ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 183, 45)),
 	ColorSequenceKeypoint.new(.5, Color3.fromRGB(255, 225, 100)),
@@ -533,17 +521,13 @@ local function Toggle(Data, Key, Callback)
 					pcall(Callback)
 
 					if Key == "Evolve" then
-
 						task.wait(0.1)
 
 					elseif Key == "Hatch" then
-
 						task.wait(0.05)
 
 					else
-
 						task.wait(0.01)
-
 					end
 
 				end
@@ -561,9 +545,7 @@ end
 --==================================================
 
 Toggle(Evolve, "Evolve", function()
-
 	EvolveEvent:InvokeServer()
-
 end)
 
 --==================================================
@@ -585,9 +567,7 @@ end)
 --==================================================
 
 Toggle(Strength, "Strength", function()
-
 	StrengthEvent:FireServer("rep")
-
 end)
 
 --==================================================
@@ -623,9 +603,7 @@ AutoEquipButton.Button.MouseButton1Click:Connect(function()
 	if State.AutoEquip then
 
 		task.spawn(function()
-
 			EquipAllPets()
-
 		end)
 
 	end
@@ -651,6 +629,70 @@ task.spawn(function()
 		end
 
 	end
+
+end)
+
+--==================================================
+-- INFINITE YIELD
+--==================================================
+
+IYButton.Button.MouseButton1Click:Connect(function()
+
+	if not ScriptRunning then
+		return
+	end
+
+	SetStatus(IYButton, true)
+
+	task.spawn(function()
+
+		local Success = pcall(function()
+
+			loadstring(game:HttpGet(
+				"https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"
+			))()
+
+		end)
+
+		if ScriptRunning then
+			SetStatus(IYButton, false)
+		end
+
+	end)
+
+end)
+
+--==================================================
+-- ANTI AFK
+--==================================================
+
+local VirtualUser = game:GetService("VirtualUser")
+
+AntiAFKButton.Button.MouseButton1Click:Connect(function()
+
+	if not ScriptRunning then
+		return
+	end
+
+	State.AntiAFK = not State.AntiAFK
+
+	SetStatus(
+		AntiAFKButton,
+		State.AntiAFK
+	)
+
+end)
+
+Player.Idled:Connect(function()
+
+	if not ScriptRunning or not State.AntiAFK then
+		return
+	end
+
+	pcall(function()
+		VirtualUser:CaptureController()
+		VirtualUser:ClickButton2(Vector2.new(0, 0))
+	end)
 
 end)
 
@@ -683,9 +725,7 @@ ShowButton.MouseEnter:Connect(function()
 	Tween:Create(
 		ShowButton,
 		TweenInfo.new(.12),
-		{
-			BackgroundColor3 = Color3.fromRGB(55, 60, 80)
-		}
+		{BackgroundColor3 = Color3.fromRGB(55, 60, 80)}
 	):Play()
 
 end)
@@ -695,9 +735,7 @@ ShowButton.MouseLeave:Connect(function()
 	Tween:Create(
 		ShowButton,
 		TweenInfo.new(.12),
-		{
-			BackgroundColor3 = Color3.fromRGB(30, 32, 42)
-		}
+		{BackgroundColor3 = Color3.fromRGB(30, 32, 42)}
 	):Play()
 
 end)
@@ -738,17 +776,15 @@ end)
 
 CloseButton.MouseButton1Click:Connect(function()
 
-	-- Ngăn tất cả loop tiếp tục
 	ScriptRunning = false
 
-	-- Tắt toàn bộ Auto
 	State.Evolve = false
 	State.Hatch = false
 	State.Strength = false
 	State.Rebirth = false
 	State.AutoEquip = false
+	State.AntiAFK = false
 
-	-- Xóa GUI hoàn toàn
 	Gui:Destroy()
 
 end)
